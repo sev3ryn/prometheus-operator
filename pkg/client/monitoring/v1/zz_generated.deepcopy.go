@@ -516,6 +516,15 @@ func (in *PrometheusSpec) DeepCopyInto(out *PrometheusSpec) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.Scheduled != nil {
+		in, out := &in.Scheduled, &out.Scheduled
+		if *in == nil {
+			*out = nil
+		} else {
+			*out = new(bool)
+			**out = **in
+		}
+	}
 	if in.Affinity != nil {
 		in, out := &in.Affinity, &out.Affinity
 		if *in == nil {

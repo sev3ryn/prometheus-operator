@@ -146,7 +146,7 @@ func generateConfig(p *v1.Prometheus, mons map[string]*v1.ServiceMonitor, ruleCo
 	var scrapeConfigs []yaml.MapSlice
 	for _, identifier := range identifiers {
 		for i, ep := range mons[identifier].Spec.Endpoints {
-			scrapeConfigs = append(scrapeConfigs, generateServiceMonitorConfig(version, mons[identifier], ep, i, basicAuthSecrets))
+			scrapeConfigs = append(scrapeConfigs, generateServiceMonitorConfig(p, version, mons[identifier], ep, i, basicAuthSecrets))
 		}
 	}
 	var alertmanagerConfigs []yaml.MapSlice
@@ -203,7 +203,8 @@ func generateConfig(p *v1.Prometheus, mons map[string]*v1.ServiceMonitor, ruleCo
 	return yaml.Marshal(cfg)
 }
 
-func generateServiceMonitorConfig(version semver.Version, m *v1.ServiceMonitor, ep v1.Endpoint, i int, basicAuthSecrets map[string]BasicAuthCredentials) yaml.MapSlice {
+func generateServiceMonitorConfig(p *v1.Prometheus, version semver.Version, m *v1.ServiceMonitor, ep v1.Endpoint, i int, basicAuthSecrets map[string]BasicAuthCredentials) yaml.MapSlice {
+	jobId := fmt.Sprintf("%s/%s/%d", m.Namespace, m.Name, i)
 	cfg := yaml.MapSlice{
 		{
 			Key:   "job_name",
@@ -269,6 +270,14 @@ func generateServiceMonitorConfig(version semver.Version, m *v1.ServiceMonitor, 
 		labelKeys = append(labelKeys, k)
 	}
 	sort.Strings(labelKeys)
+
+	if p.Spec.Scheduled != nil && *p.Spec.Scheduled {
+		relabelings = append(relabelings, yaml.MapSlice{
+			{Key: "action", Value: "keep"},
+			{Key: "source_labels", Value: []string{"__meta_kubernetes_pod_annotation_prometheus_operator_target_prometheus"}},
+			{Key: "regex", Value: p.Namespace + "/" + p.Name + "/" + jobId},
+		})
+	}
 
 	for _, k := range labelKeys {
 		relabelings = append(relabelings, yaml.MapSlice{

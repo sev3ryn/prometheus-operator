@@ -838,6 +838,13 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								},
 							},
 						},
+						"scheduled": {
+							SchemaProps: spec.SchemaProps{
+								Description: "Scheduled indicates whether a Prometheus will scrape all targets selected by it's ServiceMonitors, or only those, that have been assigned to it.",
+								Type:        []string{"boolean"},
+								Format:      "",
+							},
+						},
 						"affinity": {
 							SchemaProps: spec.SchemaProps{
 								Description: "If specified, the pod's scheduling constraints.",

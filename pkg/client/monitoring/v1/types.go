@@ -117,6 +117,10 @@ type PrometheusSpec struct {
 	// Prometheus Pods, the object must be deleted and recreated with the new list
 	// of secrets.
 	Secrets []string `json:"secrets,omitempty"`
+	// Scheduled indicates whether a Prometheus will scrape all targets
+	// selected by it's ServiceMonitors, or only those, that have been assigned
+	// to it.
+	Scheduled *bool `json:"scheduled,omitempty"`
 	// If specified, the pod's scheduling constraints.
 	Affinity *v1.Affinity `json:"affinity,omitempty"`
 	// If specified, the pod's tolerations.
