@@ -67,11 +67,15 @@ local k = import 'ksonnet/ksonnet.beta.3/k.libsonnet';
 
       local procVolumeName = 'proc';
       local procVolume = volume.fromHostPath(procVolumeName, '/proc');
-      local procVolumeMount = containerVolumeMount.new(procVolumeName, '/host/proc');
+      local procVolumeMount =
+        containerVolumeMount.new(procVolumeName, '/host/proc') +
+        containerVolumeMount.withMountPropagation('HostToContainer');
 
       local sysVolumeName = 'sys';
       local sysVolume = volume.fromHostPath(sysVolumeName, '/sys');
-      local sysVolumeMount = containerVolumeMount.new(sysVolumeName, '/host/sys');
+      local sysVolumeMount =
+        containerVolumeMount.new(sysVolumeName, '/host/sys') +
+        containerVolumeMount.withMountPropagation('HostToContainer');
 
       local nodeExporter =
         container.new('node-exporter', $._config.imageRepos.nodeExporter + ':' + $._config.versions.nodeExporter) +
