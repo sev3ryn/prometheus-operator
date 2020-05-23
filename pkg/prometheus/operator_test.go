@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kylelemons/godebug/pretty"
@@ -135,5 +135,54 @@ func TestGetNodeAddresses(t *testing.T) {
 				t.Error(pretty.Compare(ips, c.expectedAddresses))
 			}
 		})
+	}
+}
+
+func TestStatefulSetKeyToPrometheusKey(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input:    "namespace/prometheus-test",
+			expected: "namespace/test",
+		},
+		{
+			input:    "namespace/prometheus-test-shard-1",
+			expected: "namespace/test",
+		},
+	}
+
+	for _, c := range cases {
+		got := statefulSetKeyToPrometheusKey(c.input)
+		if c.expected != got {
+			t.Fatalf("Expected prometheus key %q got %q", c.expected, got)
+		}
+	}
+}
+
+func TestPrometheusKeyToStatefulSetKey(t *testing.T) {
+	cases := []struct {
+		name     string
+		shard    int
+		expected string
+	}{
+		{
+			name:     "namespace/test",
+			shard:    0,
+			expected: "namespace/prometheus-test",
+		},
+		{
+			name:     "namespace/test",
+			shard:    1,
+			expected: "namespace/prometheus-test-shard-1",
+		},
+	}
+
+	for _, c := range cases {
+		got := prometheusKeyToStatefulSetKey(c.name, c.shard)
+		if c.expected != got {
+			t.Fatalf("Expected key %q got %q", c.expected, got)
+		}
 	}
 }

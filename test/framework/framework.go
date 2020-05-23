@@ -54,6 +54,7 @@ type Framework struct {
 	HTTPClient      *http.Client
 	MasterHost      string
 	DefaultTimeout  time.Duration
+	RestConfig      *rest.Config
 }
 
 // New setups a test framework and returns it.
@@ -84,6 +85,7 @@ func New(kubeconfig, opImage string) (*Framework, error) {
 	}
 
 	f := &Framework{
+		RestConfig:      config,
 		MasterHost:      config.Host,
 		KubeClient:      cli,
 		MonClientV1:     mClientV1,
@@ -246,6 +248,8 @@ func (f *Framework) CreatePrometheusOperator(ns, opImage string, namespaceAllowl
 	if err != nil {
 		return nil, err
 	}
+
+	deploy.Spec.Template.Spec.Containers[0].Args = append(deploy.Spec.Template.Spec.Containers[0].Args, "--log-level=debug")
 
 	if opImage != "" {
 		// Override operator image used, if specified when running tests.

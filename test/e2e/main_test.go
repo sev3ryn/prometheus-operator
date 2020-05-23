@@ -178,6 +178,8 @@ func testAllNSPrometheus(t *testing.T) {
 		"PromOnlyUpdatedOnRelevantChanges":       testPromOnlyUpdatedOnRelevantChanges,
 		"PromWhenDeleteCRDCleanUpViaOwnerRef":    testPromWhenDeleteCRDCleanUpViaOwnerRef,
 		"PromDiscovery":                          testPromDiscovery,
+		"ShardingProvisioning":                   testShardingProvisioning,
+		"Resharding":                             testResharding,
 		"PromAlertmanagerDiscovery":              testPromAlertmanagerDiscovery,
 		"PromExposingWithKubernetesAPI":          testPromExposingWithKubernetesAPI,
 		"PromDiscoverTargetPort":                 testPromDiscoverTargetPort,

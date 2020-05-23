@@ -118,8 +118,18 @@ type PrometheusSpec struct {
 	// to use for pulling prometheus and alertmanager images from registries
 	// see http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-on-a-pod
 	ImagePullSecrets []v1.LocalObjectReference `json:"imagePullSecrets,omitempty"`
-	// Number of instances to deploy for a Prometheus deployment.
+	// Number of replicas of each shard to deploy for a Prometheus deployment.
+	// Number of replicas multiplied by shards is the total number of Pods
+	// created.
 	Replicas *int32 `json:"replicas,omitempty"`
+	// Number of shards to distribute targets onto. Number of replicas
+	// multiplied by shards is the total number of Pods created. Note that
+	// scaling down shards will not reshard data onto remaining instances, it
+	// must be manually moved. Increasing shards will not reshard data either
+	// but it will continue to be available from the same instances. To query
+	// globally use Thanos sidecar and Thanos querier or remote write data to a
+	// central location.
+	Shards *int32 `json:"shards,omitempty"`
 	// Name of Prometheus external label used to denote replica name.
 	// Defaults to the value of `prometheus_replica`. External label will
 	// _not_ be added when value is set to empty string (`""`).

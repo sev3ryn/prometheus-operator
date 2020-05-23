@@ -8869,7 +8869,9 @@ spec:
                   will _not_ be added when value is set to empty string (`""`).
                 type: string
               replicas:
-                description: Number of instances to deploy for a Prometheus deployment.
+                description: Number of replicas of each shard to deploy for a Prometheus
+                  deployment. Number of replicas multiplied by shards is the total
+                  number of Pods created.
                 format: int32
                 type: integer
               resources:
@@ -9259,6 +9261,16 @@ spec:
                   deploys an immutable container image. Version and Tag are ignored
                   if SHA is set.
                 type: string
+              shards:
+                description: Number of shards to distribute targets onto. Number of
+                  replicas multiplied by shards is the total number of Pods created.
+                  Note that scaling down shards will not reshard data onto remaining
+                  instances, it must be manually moved. Increasing shards will not
+                  reshard data either but it will continue to be available from the
+                  same instances. To query globally use Thanos sidecar and Thanos
+                  querier or remote write data to a central location.
+                format: int32
+                type: integer
               storage:
                 description: Storage spec to specify how storage shall be used.
                 properties:
