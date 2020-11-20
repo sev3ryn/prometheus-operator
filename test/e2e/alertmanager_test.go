@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -951,7 +952,12 @@ receivers:
 templates: []
 `, ns, ns, ns)
 
-		if string(cfgSecret.Data["alertmanager.yaml"]) != expected {
+		// replace tabs that could be added to expected by mistake depending on editor setting
+		// with double whitespace because they will fail got vs expected comparison
+		expected = strings.ReplaceAll(expected, "\t", "  ")
+
+		if diff := cmp.Diff(string(cfgSecret.Data["alertmanager.yaml"]), expected); diff != "" {
+			t.Log("got(-), want(+):\n" + diff)
 			return false, nil
 		}
 
