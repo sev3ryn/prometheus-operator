@@ -120,6 +120,8 @@ type Receiver struct {
 	WebhookConfigs []WebhookConfig `json:"webhookConfigs,omitempty"`
 	// List of WeChat configurations.
 	WeChatConfigs []WeChatConfig `json:"weChatConfigs,omitempty"`
+	// List of VictorOps configurations.
+	VictorOpsConfigs []VictorOpsConfig `json:"victorOpsConfigs,omitempty"`
 }
 
 // PagerDutyConfig configures notifications via PagerDuty.
@@ -408,6 +410,29 @@ type WeChatConfig struct {
 	Message     *string `json:"message,omitempty"`
 	MessageType *string `json:"messageType,omitempty"`
 	// HTTP client configuration.
+	HTTPConfig *HTTPConfig `json:"httpConfig,omitempty"`
+}
+
+// VictorOpsConfig configures notifications via VictorOps.
+// See https://prometheus.io/docs/alerting/latest/configuration/#victorops_config
+type VictorOpsConfig struct {
+	// Whether or not to notify about resolved alerts.
+	SendResolved *bool `json:"sendResolved,omitempty"`
+	// The API key to use when talking to the VictorOps API.
+	APIKey *v1.SecretKeySelector `json:"apiKey,omitempty"`
+	// The VictorOps API URL.
+	APIURL *string `json:"apiUrl,omitempty"`
+	// A key used to map the alert to a team.
+	RoutingKey *string `json:"routingKey,omitempty"`
+	// Describes the behavior of the alert (CRITICAL, WARNING, INFO).
+	MessageType *string `json:"messageType,omitempty"`
+	// Contains summary of the alerted problem.
+	EntityDisplayName *string `json:"entityDisplayName,omitempty"`
+	// Contains long explanation of the alerted problem.
+	StateMessage *string `json:"stateMessage,omitempty"`
+	// The monitoring tool the state message is from.
+	MonitoringTool *string `json:"monitoringTool,omitempty"`
+	// The HTTP client's configuration.
 	HTTPConfig *HTTPConfig `json:"httpConfig,omitempty"`
 }
 

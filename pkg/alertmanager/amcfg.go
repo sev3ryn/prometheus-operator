@@ -232,6 +232,18 @@ func (cg *configGenerator) convertReceiver(ctx context.Context, in *monitoringv1
 		}
 	}
 
+	var victorOpsConfigs []*victorOpsConfig
+	if l := len(in.VictorOpsConfigs); l > 0 {
+		victorOpsConfigs = make([]*victorOpsConfig, l)
+		for i := range in.VictorOpsConfigs {
+			receiver, err := cg.convertVictorOpsConfig(ctx, in.VictorOpsConfigs[i], crKey)
+			if err != nil {
+				return nil, errors.Wrapf(err, "VictorOpsConfig[%d]", i)
+			}
+			victorOpsConfigs[i] = receiver
+		}
+	}
+
 	return &receiver{
 		Name:             prefixReceiverName(in.Name, crKey),
 		OpsgenieConfigs:  opsgenieConfigs,
@@ -239,6 +251,7 @@ func (cg *configGenerator) convertReceiver(ctx context.Context, in *monitoringv1
 		SlackConfigs:     slackConfigs,
 		WebhookConfigs:   webhookConfigs,
 		WeChatConfigs:    weChatConfigs,
+		VictorOpsConfigs: victorOpsConfigs,
 	}, nil
 }
 
@@ -629,6 +642,47 @@ func (cg *configGenerator) convertWeChatConfig(ctx context.Context, in monitorin
 		out.HTTPConfig = httpConfig
 	}
 
+	return out, nil
+}
+
+func (cg *configGenerator) convertVictorOpsConfig(ctx context.Context, in monitoringv1alpha1.VictorOpsConfig, crKey types.NamespacedName) (*victorOpsConfig, error) {
+	out := &victorOpsConfig{}
+
+	if in.SendResolved != nil {
+		out.VSendResolved = *in.SendResolved
+	}
+	if in.APIKey != nil {
+		apiKey, err := cg.store.GetSecretKey(ctx, crKey.Namespace, *in.APIKey)
+		if err != nil {
+			return nil, errors.Errorf("failed to get secret %q", in.APIKey)
+		}
+		out.APIKey = apiKey
+	}
+	if in.APIURL != nil {
+		out.APIURL = *in.APIURL
+	}
+	if in.RoutingKey != nil {
+		out.RoutingKey = *in.RoutingKey
+	}
+	if in.MessageType != nil {
+		out.MessageType = *in.MessageType
+	}
+	if in.EntityDisplayName != nil {
+		out.EntityDisplayName = *in.EntityDisplayName
+	}
+	if in.StateMessage != nil {
+		out.StateMessage = *in.StateMessage
+	}
+	if in.MonitoringTool != nil {
+		out.MonitoringTool = *in.MonitoringTool
+	}
+	if in.HTTPConfig != nil {
+		httpConfig, err := cg.convertHTTPConfig(ctx, *in.HTTPConfig, crKey)
+		if err != nil {
+			return nil, err
+		}
+		out.HTTPConfig = httpConfig
+	}
 	return out, nil
 }
 

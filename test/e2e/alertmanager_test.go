@@ -840,6 +840,14 @@ func testAlertmanagerConfigCRD(t *testing.T) {
 						return &str
 					}("testingCorpID"),
 				}},
+				VictorOpsConfigs: []monitoringv1alpha1.VictorOpsConfig{{
+					APIKey: &v1.SecretKeySelector{
+						LocalObjectReference: v1.LocalObjectReference{
+							Name: testingSecret,
+						},
+						Key: testingSecretKey,
+					},
+				}},
 			}},
 		},
 	}
@@ -937,6 +945,9 @@ receivers:
   - send_resolved: false
     api_secret: 1234abc
     corp_id: testingCorpID
+  victorops_configs:
+  - send_resolved: false
+    api_key: 1234abc
 templates: []
 `, ns, ns, ns)
 
