@@ -661,9 +661,12 @@ func (cg *configGenerator) convertVictorOpsConfig(ctx context.Context, in monito
 	if in.APIURL != nil {
 		out.APIURL = *in.APIURL
 	}
-	if in.RoutingKey != nil {
-		out.RoutingKey = *in.RoutingKey
+
+	if in.RoutingKey == nil || *in.RoutingKey == "" {
+		return nil, errors.New("missing Routing key in VictorOps config")
 	}
+	out.RoutingKey = *in.RoutingKey
+
 	if in.MessageType != nil {
 		out.MessageType = *in.MessageType
 	}

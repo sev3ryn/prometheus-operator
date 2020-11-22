@@ -1104,6 +1104,10 @@ func checkVictorOpsConfigs(ctx context.Context, configs []monitoringv1alpha1.Vic
 			}
 		}
 
+		if config.RoutingKey == nil || *config.RoutingKey == "" {
+			return errors.New("missing Routing key in VictorOps config")
+		}
+
 		victoropsConfigKey := fmt.Sprintf("%s/victorops/%d", key, i)
 		if err := configureHTTPConfigInStore(ctx, config.HTTPConfig, namespace, victoropsConfigKey, store); err != nil {
 			return err

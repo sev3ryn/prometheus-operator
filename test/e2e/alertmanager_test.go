@@ -847,6 +847,9 @@ func testAlertmanagerConfigCRD(t *testing.T) {
 						},
 						Key: testingSecretKey,
 					},
+					RoutingKey: func(str string) *string {
+						return &str
+					}("abc"),
 				}},
 			}},
 		},
@@ -948,6 +951,7 @@ receivers:
   victorops_configs:
   - send_resolved: false
     api_key: 1234abc
+    routingKey: abc
 templates: []
 `, ns, ns, ns)
 
