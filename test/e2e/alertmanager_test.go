@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -955,7 +956,7 @@ receivers:
 templates: []
 `, ns, ns, ns)
 
-		if diff := cmp.Diff(expected, string(cfgSecret.Data["alertmanager.yaml"])) diff != ""{
+		if diff := cmp.Diff(expected, string(cfgSecret.Data["alertmanager.yaml"])); diff != "" {
 			t.Log(diff)
 			return false, nil
 		}
