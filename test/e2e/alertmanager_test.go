@@ -955,7 +955,8 @@ receivers:
 templates: []
 `, ns, ns, ns)
 
-		if string(cfgSecret.Data["alertmanager.yaml"]) != expected {
+		if diff := cmp.Diff(expected, string(cfgSecret.Data["alertmanager.yaml"])) diff != ""{
+			t.Log(diff)
 			return false, nil
 		}
 
